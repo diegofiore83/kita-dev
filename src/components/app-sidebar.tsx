@@ -1,4 +1,12 @@
-import { MoreHorizontal, Users } from "lucide-react";
+import { ComponentProps } from "react";
+import {
+  Book,
+  BookLock,
+  BookCheck,
+  MoreHorizontal,
+  Plus,
+  Users,
+} from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -7,6 +15,7 @@ import {
 } from "@/components/ui/accordion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,16 +27,26 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
+import { Lesson } from "@/types/lesson";
 
 interface IconTemplateProps {
   image: string;
   fallback: string;
+}
+
+interface AppSidebarProps {
+  lessons: Lesson[];
+  activeLesson: number;
+  onActiveLessonChange: (index: number) => void;
 }
 
 const iconTemplate = ({ image, fallback }: IconTemplateProps) => (
@@ -88,7 +107,11 @@ const users = [
   },
 ];
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({
+  ...props
+}: ComponentProps<typeof Sidebar> & AppSidebarProps) {
+  const { lessons, activeLesson, onActiveLessonChange } = props;
+
   return (
     <Sidebar
       className="top-[--header-height] pb-[--header-height]"
@@ -99,8 +122,37 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <div>Python Basics</div>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup title="Group 1"></SidebarGroup>
-        <SidebarGroup title="Group 2"></SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Lessons</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {lessons.map((lesson, index) => (
+                <SidebarMenuItem key={index}>
+                  <SidebarMenuButton
+                    asChild
+                    onClick={() => onActiveLessonChange(index)}
+                  >
+                    <a className="flex items-center gap-2" href="#">
+                      {lesson.state === "completed" ? (
+                        <BookCheck />
+                      ) : lesson.state === "in progress" ? (
+                        <Book />
+                      ) : (
+                        <BookLock />
+                      )}
+                      <span
+                        className={cn(activeLesson === index && "font-bold")}
+                      >{`Lesson ${index + 1}: ${lesson.title}`}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+            <Button className="w-full mt-4" variant="outline">
+              <Plus /> New Lesson
+            </Button>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
         <Accordion type="single" collapsible className="w-full">

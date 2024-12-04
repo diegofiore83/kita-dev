@@ -9,11 +9,48 @@ import {
 } from "./components/ui/resizable";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { Lesson } from "@/types/lesson";
 
 const HEADER_HEIGHT = "4rem";
 
+const lessons: Lesson[] = [
+  {
+    title: "The basic",
+    state: "completed",
+  },
+  {
+    title: "Web tools",
+    state: "completed",
+  },
+  {
+    title: "Morse code",
+    state: "in progress",
+  },
+  {
+    title: "Open source",
+    state: "to do",
+  },
+  {
+    title: "HTML syntax",
+    state: "to do",
+  },
+  {
+    title: "Basic structure",
+    state: "to do",
+  },
+  {
+    title: "CodePen",
+    state: "to do",
+  },
+  {
+    title: "Script tags",
+    state: "to do",
+  },
+];
+
 function App() {
   const [open, setOpen] = useState<boolean>(true);
+  const [activeLesson, setActiveLesson] = useState(2);
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
@@ -46,11 +83,15 @@ function App() {
           </div>
         </header>
         <SidebarProvider open={open} onOpenChange={setOpen}>
-          <AppSidebar />
+          <AppSidebar
+            lessons={lessons}
+            activeLesson={activeLesson}
+            onActiveLessonChange={setActiveLesson}
+          />
           <SidebarInset>
             <ResizablePanelGroup direction="horizontal">
               <ResizablePanel className="min-h-[100vh] p-4">
-                Files
+                {`Lesson ${activeLesson + 1}: ${lessons[activeLesson].title}`}
               </ResizablePanel>
               <ResizableHandle />
               <ResizablePanel className="min-h-[100vh] p-4">
